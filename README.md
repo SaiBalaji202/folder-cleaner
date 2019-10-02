@@ -1,27 +1,29 @@
 # folder-cleaner
 A Simple Python App to clean files in any Directory
 
-# Install Dependencies
+## Install Dependencies
 ```
 $pipenv install
 ```
 
-# Activate Virtual Environment
+## Activate Virtual Environment
 ```
 $pipenv shell
 ```
 
-# Checking the Virtual Environment Directory
+## Checking the Virtual Environment Directory
 ```
 $pipenv --venv
 ```
 
-# Running the code
+## Running the code
 ```
 $python app.py
 ```
 
-# Exiting the Virtual Environment
+## Exiting the Virtual Environment
 ```
 $exit
 ```
+
+
