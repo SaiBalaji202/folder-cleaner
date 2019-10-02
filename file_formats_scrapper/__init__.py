@@ -1,0 +1,1 @@
+from file_formats_scrapper.file_formats_scrapper import FileFormatsScrapper
