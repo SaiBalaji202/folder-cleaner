@@ -1,9 +1,12 @@
-import requests
-from bs4 import BeautifulSoup
-from file_formats_scrapper.utils import Utils
-
+from multiprocessing import Process
 from pprint import pprint
 import json
+
+import requests
+from bs4 import BeautifulSoup
+
+from file_formats_scrapper.utils import Utils
+import spinner
 
 
 class FileFormatsScrapper():
@@ -18,6 +21,31 @@ class FileFormatsScrapper():
         self.TOC_SELECTOR = '#toc > ul'
         self.TOC_TEXT_SELECTOR = '.toctext'
         self.file_type_info = {}
+
+    def scrap(self):
+        """
+            Similar to self.scrap_file_formats(), but displays spinner when scrapping the file formats
+
+            Scrap all the file formats from self.url and returns a result in the JSON format
+            During the scraping, it will display a nice spinner.
+
+            It uses self.scrap_file_formats() method under the hood
+        """
+        # Created a new process to display spinner asynchronously
+        spinner_process = Process(
+            target=spinner.spin_infinite, args=(.5, "Generating filetypes JSON"))
+
+        # Start Spinning
+        spinner_process.start()
+
+        # Start Scrapping
+        file_types = self.scrap_file_formats()
+
+        # Stop Spinning
+        spinner_process.terminate()
+
+        # Return the file_types JSON object
+        return file_types
 
     def scrap_file_formats(self):
         """
