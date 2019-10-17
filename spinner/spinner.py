@@ -19,13 +19,19 @@ def spinning_cursor():
 
 def spin_infinite(delay=.1, message=''):
     """
-        Display Spinner for a infinite number of time
+    Display Spinner for a infinite number of time
 
-        delay => Seconds (in number) in which the cursor direction should change
-        message => Message (string) that should display along with the spinner
+    Parameters:
+    ---
+    delay: number
+        No of seconds the cursor should remain in one direction        
+    msg: str
+        Message that should get logged along with the spinner
     """
     # Get the generator object to iterate over the cursor symbols infinetely
     spinner = spinning_cursor()
+    # Manually Add a new line
+    print()
     # Display the Message
     # Set end = ' ', to avoid new line (& to just leave a space).  So, that the spinner will appear in the same line
     print(message.strip(), end=' ')
@@ -44,6 +50,39 @@ def spin_infinite(delay=.1, message=''):
         sys.stdout.flush()
         # Remove the Cursor for the previous direction
         # Set end='' to avoid new line
+        print('\b', end='')
+
+
+def spin(count=20, delay=.1, message=''):
+    """
+    Display Spinner until a specific count
+
+    Parameters:
+    ---
+    count: number 
+        Number of iteration, the spinner should take to complete the spinning
+    delay: number
+        No of seconds the cursor should remain in one direction        
+    msg: str
+        Message that should get logged along with the spinner
+    """
+    # Get the generator object to iterate over the cursor symbols
+    spinner = spinning_cursor()
+    # Manually Add a new line
+    print()
+    # Display the Message & Prevent the new line at the end of the print (end = ' ')
+    print(message.strip(), end=' ')
+
+    # Spin until the count
+    for _ in range(count):
+        # Print the correct cursor for the current direction & Prevent the new line being added (end = '')
+        print(next(spinner), end='')
+        # Delay (i.e., Pause) the spinner
+        time.sleep(delay)
+        # Since we pause the execution, Python's standard out is buffered by default
+        # sys.stdout.flush() will force the Python to "flush" the buffer
+        sys.stdout.flush()
+        # Remove the previous cursor & Prevent the new line being added (end = '')
         print('\b', end='')
 
 
