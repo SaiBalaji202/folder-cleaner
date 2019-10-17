@@ -1,5 +1,86 @@
+"""
+A Module which contains helper methods to clean a folder
+"""
+
 import json
 import os
+from os.path import isfile, join, exists, basename
+from pathlib import Path
+import shutil
+
+import spinner
+import folder_cleaner_constants as fcc
+import utils
+
+
+def scan_directory(directory):
+    """
+    Returns all the files (only files) of a directory
+
+    Parameters:
+    ---
+    directory: str
+        complete path of a directory to be scanned
+    """
+    files = [join(directory, content) for content in os.listdir(
+        directory) if isfile(join(directory, content))]
+    return files
+
+
+def create_directory(dir_full_name):
+    """
+    Creates a Hierarchy of Nested Directories if not exist
+
+    Parameters:
+    ---
+    dir_full_name: str
+        Complete path of a nested directories to be created
+    """
+    if not exists(dir_full_name):
+        os.makedirs(dir_full_name)
+
+
+def move_file(old_path, new_path):
+    """
+    Moves file from one path to another path
+
+    Parameters:
+    ---
+    old_path: str
+        Existing File Path (along with the file name)
+    new_path: str
+        New Path where the file is to be moved (along with the file name)    
+    """
+    os.rename(old_path, new_path)
+
+
+def delete_directory(directory):
+    """    
+    Deletes a Directory along with its content
+
+    Parameters:
+    ---
+    directory: str
+        Full Path of the directory to be deleted
+    """
+    if exists(directory):
+        shutil.rmtree(directory)
+
+
+def get_extension(file_name):
+    """
+    Returns a Extension of a file
+
+    Parameters:
+    ---
+    file_name: str
+        Name of the File to which you want to get the extension.     
+
+    Example:
+    ---
+    get_extension('filename.mp4') => '.mp4'
+    """
+    return Path(file_name).suffix
 
 
 def get_file_path(file_type_info: dict, search_type, file_path):
