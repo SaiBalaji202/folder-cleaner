@@ -14,93 +14,109 @@ class FileFormatsScrapper():
         Class to scrap data from https://en.wikipedia.org/wiki/List_of_file_formats
     """
 
+    __MSG_GEN_JSON = 'Generating filetypes JSON'
+
     def __init__(self):
-        self.url = 'https://en.wikipedia.org/wiki/List_of_file_formats'
-        self.__soup = self.get_soup()
-        self.NOT_A_FILE_TYPES = ['see also', 'references', 'external links']
-        self.TOC_SELECTOR = '#toc > ul'
-        self.TOC_TEXT_SELECTOR = '.toctext'
-        self.file_type_info = {}
+        self.__url = 'https://en.wikipedia.org/wiki/List_of_file_formats'
+        self.__soup = self.__get_soup()
+        self.__NOT_A_FILE_TYPES = ['see also', 'references', 'external links']
+        self.__TOC_SELECTOR = '#toc > ul'
+        self.__TOC_TEXT_SELECTOR = '.toctext'
+        self.__file_type_info = {}
 
-    def scrap(self):
+    def scrap(self, spin=False):
         """
-            Similar to self.scrap_file_formats(), but displays spinner when scrapping the file formats
-
             Scrap all the file formats from self.url and returns a result in the JSON format
-            During the scraping, it will display a nice spinner.
+            Returns the scrapped file_types JSON Object
 
-            It uses self.scrap_file_formats() method under the hood
+            Parameters:
+            ---
+            spin: bool
+                Flag that decides whether to display a spinner or not (default False)
         """
-        # Created a new process to display spinner asynchronously
-        spinner_process = Process(
-            target=spinner.spin_infinite, args=(.5, "Generating filetypes JSON"))
 
         # Start Spinning
-        spinner_process.start()
+        if spin:
+            spinner = spinner.start_spinner(
+                msg=FileFormatsScrapper.__MSG_GEN_JSON)
 
-        # Start Scrapping
-        file_types = self.scrap_file_formats()
-
-        # Stop Spinning
-        spinner_process.terminate()
-
-        # Return the file_types JSON object
-        return file_types
-
-    def scrap_file_formats(self):
-        """
-            Scrap all the file formats from self.url and returns a result in the JSON format
-        """
         # Get a soup to parse a HTML of the Site
-        soup = self.get_soup()
+        soup = self.__get_soup()
 
         # Selector to fetch the Table of Conetents page (to fetch type and sub-types)
-        file_types = soup.select_one(self.TOC_SELECTOR)
-        self.extract_data_from_a_tag(file_types)
-        return self.file_type_info
+        file_types = soup.select_one(self.__TOC_SELECTOR)
+        self.__extract_data_from_a_tag(file_types)
 
-    def clean_type(self, type_name):
+        # Stop Spinning
+        if spin:
+            spinner.stop_spinner(spinner)
+
+        # Return the file_types JSON object
+        return self.__file_type_info
+
+    def __clean_type(self, type_name):
         """
-        Remove the unnecessary leading and trailing spaces and lower the type
-        E.g. '<<space>>.doc<<space>>' => '.doc'
+        Returns a file_type by Removing the unnecessary leading and trailing spaces and lower the type
+
+        Parameters:
+        ---
+            type_name: str
+                file type to clean
+
+        Example:
+        ---
+        self.__clean_type('<<space>>.doc<<space>>') => '.doc'
         """
         return type_name.strip().lower()
 
-    def clean_file_type(self, file_type):
+    def __clean_file_type(self, file_type):
+        """        
+        Returns a file_type by Removing . from the extension
+
+        Parameters:
+        ---
+            file_type: str
+                file type to clean
+
+        Example:
+        ---
+        self.__clean_file_type('.docx') => 'docx'
+        self.__clean_file_type('.PPTX') =>  'pptx'            
         """
-        Remove . from the extension
-        E.g. .docx => docx
-             .PPTX => pptx
-        """
-        file_type = self.clean_type(file_type)
+        file_type = self.__clean_type(file_type)
         if not len(file_type.split(' ')) > 1:
             if file_type and file_type[0] == '.':
                 file_type = file_type[1:]
             return file_type
 
-    def extract_data_from_a_tag(self, selector_tag, keys=[]):
+    def __extract_data_from_a_tag(self, selector_tag, keys=[]):
         """
             Extract all the type name (E.g. Program) and the sub-type name (E.g. Python) from the selector and update the self.file_type_info dictionary.
             If a root type name is Program, then it has lot of sub-types like C, C++, Java, Python, etc.
             Using this type and the sub-type name, we can create a folder to store the corresponding files in it.
             Used to group our File.
 
-            selector_tag = BeautifulSoup Tag of <ul/> tag
-            keys = List of keys, which represent a nested keys of a single item
-                    E.g. keys = [Program, Python], 
-                         keys = [Program, C]            
+            Parameters:
+            ---
+            selector_tag: Tag 
+                BeautifulSoup Tag of <ul/> tag
+            keys: list
+                List of keys, which represent a nested keys of a single item
+                    keys = [Program, Python]
+                    keys = [Program, C]       
         """
         file_types = selector_tag.find_all('li', recursive=False)
 
         # Each type may have a sub-type too
         for file_type in file_types:
-            type_name = file_type.select_one(self.TOC_TEXT_SELECTOR).getText()
+            type_name = file_type.select_one(
+                self.__TOC_TEXT_SELECTOR).getText()
             # if the fetched data is a valid file type
-            if self.clean_type(type_name) not in self.NOT_A_FILE_TYPES:
+            if self.__clean_type(type_name) not in self.__NOT_A_FILE_TYPES:
                 # Add the type name to the self.file_type_info
                 keys.append(type_name)
                 # Setting Value for the parent property.  E.g. Program: {}
-                Utils.set_dict(self.file_type_info, keys, {})
+                Utils.set_dict(self.__file_type_info, keys, {})
 
                 # Fetching all the sub-types of a current type
                 # E.g. Program => Python
@@ -110,12 +126,12 @@ class FileFormatsScrapper():
                         # E.g. Program: {sub_types: {}}
                     keys.append('sub_types')
                     # Adding sub_types to self.file_type_info
-                    Utils.set_dict(self.file_type_info, keys, {})
+                    Utils.set_dict(self.__file_type_info, keys, {})
 
                     # Iterating through all the sub_types
                     for sub_type in sub_types:
                         # Recursively call extract_data_from_a_tag() to extract all the sub_type info
-                        self.extract_data_from_a_tag(
+                        self.__extract_data_from_a_tag(
                             selector_tag=sub_type, keys=keys)
                     # Removing the sub_types key
                     keys.pop()
@@ -128,20 +144,23 @@ class FileFormatsScrapper():
                 # E.g. types of 'web page' will be stored inside the tag that has a id 'web_page'
                 selector = f"[id='{Utils.replace_white_space(type_name)}']"
 
-                Utils.set_dict(self.file_type_info, keys,
-                               self.extract_types_from_a_selector(selector))
+                Utils.set_dict(self.__file_type_info, keys,
+                               self.__extract_types_from_a_selector(selector))
                 # Popping the types key
                 keys.pop()
 
                 # Popping the type_name key
                 keys.pop()
 
-    def extract_types_from_a_selector(self, css_selector):
+    def __extract_types_from_a_selector(self, css_selector):
         """
-            Extract and return all file types from the parent tag, that you specified by a css_selector
-
-            css_selector => CSS Selector for a parent tag that contains all the valid file types
+            Extract and returns all file types from the parent tag, that you specified by a css_selector
             Returns => file_types => List of file types
+
+            Parameters:
+            ---
+            css_selector: str 
+                CSS Selector for a parent tag that contains all the valid file types            
         """
         element = self.__soup.select_one(css_selector)
         # parent = element.parent
@@ -164,20 +183,20 @@ class FileFormatsScrapper():
                     # If there is no unexpected child sub-category
                     if not len(unexpected_child_types) > 0:
                         # Here the file_types are normal strings
-                        for file_type in self.get_types_from_li(li.getText()):
+                        for file_type in self.__get_types_from_li(li.getText()):
                             # Cleaning file types
                             # E.g. '  .doc ' => 'doc'
-                            file_type = self.clean_file_type(file_type)
+                            file_type = self.__clean_file_type(file_type)
                             if file_type:
                                 file_types.append(file_type)
                     else:
                         # Here the file_types are dictionary
 
                         # Getting the sub-type name alone, without description
-                        sub_type_name = self.get_subtype_name_without_desc(
+                        sub_type_name = self.__get_subtype_name_without_desc(
                             li.getText())
                         # Get all the unexpected nested types
-                        unexpeced_nested_types = self.get_unexpected_nested_ul_types(
+                        unexpeced_nested_types = self.__get_unexpected_nested_ul_types(
                             parent_tag=li,
                             parent_name=sub_type_name)
                         if unexpeced_nested_types:
@@ -191,20 +210,27 @@ class FileFormatsScrapper():
                     lis = element_to_process.findChildren('li')
                     for li in lis:
                         # Getting all types from a row / li
-                        for file_type in self.get_types_from_li(li.getText()):
+                        for file_type in self.__get_types_from_li(li.getText()):
                             # Clean and store file_type
-                            file_type = self.clean_file_type(file_type)
+                            file_type = self.__clean_file_type(file_type)
                             if file_type:
                                 file_types.append(file_type)
 
         return file_types
 
-    def get_subtype_name_without_desc(self, sub_type):
+    def __get_subtype_name_without_desc(self, sub_type):
         """
-            Get a type name without it's description and it's subtypes
-            E.g. 'Document - Document Files
-                    .doc - document
-                    .docx - document' => 'Document'
+            Returns a type name without it's description and it's subtypes
+
+            Parameters:
+            ---
+            sub_type: str
+                Sub Type with its description
+            Example:
+            ---
+            E.g. self.__get_subtype_name_without_desc('Document - Document Files
+                                                .doc - document
+                                                .docx - document') => 'Document'
         """
         sub_type = Utils.fetch_substring(sub_type, '\n')
         # Remove unicode hyphen
@@ -217,7 +243,15 @@ class FileFormatsScrapper():
         sub_type = Utils.fetch_substring(sub_type, '-')
         return sub_type.strip()
 
-    def get_types_from_li(self, li):
+    def __get_types_from_li(self, li):
+        """
+        Returns all file types seperated by comma from a single <li /> / single row
+
+        Parameters:
+        ---
+            li: str
+                <li /> string
+        """
         # Handling Types
         types_word = li
 
@@ -261,14 +295,17 @@ class FileFormatsScrapper():
 
         return types
 
-    def get_unexpected_nested_ul_types(self, parent_tag, parent_name):
+    def __get_unexpected_nested_ul_types(self, parent_tag, parent_name):
         """
             Returns a nested ul that may come unexpectedly inside a types array
-
-            parent_tag => BeautifulSoup Tag of a li which contains that unexpected nested types
-            parent_nmae => Name of the parent_tag
-
             Returns => a dictionary that contains the nested type info & its corresponding sub-typ info
+
+            Parameters:
+            ---
+                parent_tag: Tag 
+                    BeautifulSoup Tag of a li which contains that unexpected nested types
+                parent_nmae: str
+                    Name of the parent_tag
         """
         # Getting a nested ul
         ul = parent_tag.select_one('ul')
@@ -281,17 +318,17 @@ class FileFormatsScrapper():
         for li in lis:
             # Get all types from a single row / single li
             # E.g. Python (.py, .pyc) => [.py, .pyc]
-            for file_type in self.get_types_from_li(li.getText()):
+            for file_type in self.__get_types_from_li(li.getText()):
                 # If there is no sub-type
                 if not len(li.findChildren('ul')) > 0:
                     # Clean the File Type.  E.g. '.doc' => 'doc'
-                    file_type = self.clean_file_type(file_type)
+                    file_type = self.__clean_file_type(file_type)
                 else:
                     # Getting the name of sub-type by removing the description
-                    sub_type_name = self.get_subtype_name_without_desc(
+                    sub_type_name = self.__get_subtype_name_without_desc(
                         li.getText())
                     # Call this method recursively to get all the nested sub-types
-                    nested_types = self.get_unexpected_nested_ul_types(
+                    nested_types = self.__get_unexpected_nested_ul_types(
                         li, sub_type_name)
 
                 # Storing a file_type, if available
@@ -311,7 +348,7 @@ class FileFormatsScrapper():
             }
         }
 
-    def get_soup(self):
+    def __get_soup(self):
         """
             Send request to the URL and get a soup object that represents the structure of the URL
         """
