@@ -1,5 +1,6 @@
 import sys
 import time
+from multiprocessing import Process
 
 
 def spinning_cursor():
@@ -71,6 +72,51 @@ def spin(count=20, delay=.1, message=''):
         # Remove the previous cursor & Prevent the new line being added (end = '')
         print('\b', end='')
 
+
+def start_spinner(delay=.5, msg='PROCESSING', count=-1):
+    """
+    Uses spinner package to display spinner parallely
+
+    Parameters:
+    ---
+    delay: number
+        No of seconds the cursor should remain in one direction        
+    msg: str
+        Message that should get logged along with the spinner
+    count: number
+        If -1, then spin for infinite no of times, else spin for count no of times(default -1)
+    """
+    try:
+        # Created a new process to display spinner asynchronously
+        if count == -1:
+            spnr = Process(target=spin_infinite, args=(delay, msg))
+        else:
+            spnr = Process(target=spin, args=(count, delay, msg))
+        # Start Spinning
+        spnr.start()
+        return spnr
+    except:
+        print('Unable to Start a Spinner')
+
+
+def stop_spinner(spnr: Process):
+    """
+    Terminate the spinner process
+
+    Parameters:
+    ---
+    spnr: Process
+        Instance of the running spinner process
+    """
+    try:
+        # Stop Spinning
+        spnr.terminate()
+    except:
+        print('Unable to Stop the Spinner')
+
+
+if __name__ == '__main__':
+    spin(4)
 
 if __name__ == '__main__':
     spin(4)
