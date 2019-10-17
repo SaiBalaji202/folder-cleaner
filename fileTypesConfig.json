@@ -795,7 +795,10 @@
                 ]
             }
         },
-        "types": []
+        "types": [
+            "jpeg",
+            "jpg"
+        ]
     },
     "Links and shortcuts": {
         "types": [
@@ -833,6 +836,7 @@
             "ear",
             "elf",
             "expander",
+            "exe", 
             "ipa",
             "jeff",
             "jar",
@@ -1630,7 +1634,8 @@
             "wmv",
             "wtv",
             "yuv",
-            "webm"
+            "webm",
+            "mp4"
         ]
     },
     "Video game data": {
