@@ -37,7 +37,7 @@ class FileFormatsScrapper():
 
         # Start Spinning
         if spin:
-            spinner = spinner.start_spinner(
+            spnr = spinner.start_spinner(
                 msg=FileFormatsScrapper.__MSG_GEN_JSON)
 
         # Get a soup to parse a HTML of the Site
@@ -49,7 +49,7 @@ class FileFormatsScrapper():
 
         # Stop Spinning
         if spin:
-            spinner.stop_spinner(spinner)
+            spinner.stop_spinner(spnr)
 
         # Return the file_types JSON object
         return self.__file_type_info
