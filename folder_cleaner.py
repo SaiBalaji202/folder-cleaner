@@ -176,12 +176,106 @@ def get_file_paths(file_type_info, search_type, file_paths):
     return found
 
 
+def set_up_test_folder(old_folder, new_folder, log=False):
+    """
+    Set up the testing environment to test the folder-cleaning feature
+
+    Setup's a new_folder with mixed types of files that are copied from some folder (old_folder)
+
+    Parameters:
+    ---
+    old_folder: str
+        Source Folder Path from where the files should be copied
+    new_folder: str
+        Destination Folder Path to where the files should be pasted
+    log: bool
+        Diplay Spinner with the corresponding log message when doing the corresponding operation (default False)
+    """
+    # Starting Spinner
+    if log:
+        spnr = spinner.start_spinner(msg=fcc.MSG_SET_ENV)
+
+    # Recreating a directory to clean by deleting it and creating it again
+    delete_directory(new_folder)
+    create_directory(new_folder)
+
+    # Scanning all the files from the Source Directory
+    files = scan_directory(old_folder)
+
+    # Copying all the files from the Source Directory to the Directory to be cleaned
+    for file in files:
+        file_name = basename(file)
+        new_file = join(new_folder, file_name)
+        shutil.copyfile(file, new_file)
+
+    # Stopping Spinner
+    if log:
+        spinner.stop_spinner(spnr)
+
+
+def clean_folder(config_json_path, folder_to_clean, log=False):
+    """
+    Performs Folder Cleaning Operation
+
+    Parameters:
+    ---
+    config_json_path: str
+        Path of the JSON File that contains the details of all the possible file types.
+        Use file_formats_scrapper package to generate this JSON file.
+    folder_to_clean: str
+        Path of folder to be cleaned
+    log: bool
+        Diplay Spinner with the corresponding log message when doing the corresponding operation (default False)
+    """
+    # Open the JSON File
+    with open(config_json_path) as config_file:
+        # Parsing the JSON File to a Python Type
+        file_type_info = json.load(config_file)
+
+        # Starting Spinner
+        if log:
+            spnr = spinner.start_spinner(msg=fcc.MSG_DIR_SCAN)
+
+        # Getting all files from the directory to be scanned
+        files = scan_directory(directory)
+
+        # Stopping Spinner
+        if log:
+            spinner.stop_spinner(spnr)
+
+        # Starting Spinner
+        if log:
+            spnr = spinner.start_spinner(msg=fcc.MSG_FILE_MOVE)
+
+        # Looping over the files
+        for file in files:
+            # Getting the File Extension and removing . (E.g. .mp4 => mp4)
+            ext = get_extension(file)[1:]
+            file_path = []
+            # Getting the Path of the file based on it's extension (ext)
+            if get_file_path(file_type_info, ext, file_path):
+                # Reversing the list of path to get the correct path
+                file_path = file_path[::-1]
+                # Generating the final directory path from the base directory + the generated file path
+                new_dir = join(directory, '\\'.join(file_path))
+                # Generating the final file path by new_dir + file_name
+                new_file = join(new_dir, os.path.basename(file))
+                # Creating a new_dir to move the file
+                create_directory(new_dir)
+                # Moving the file to it's corresponding directory
+                move_file(file, new_file)
+
+        # Stopping Spinner
+        if log:
+            spinner.stop_spinner(spnr)
+
+
 if __name__ == '__main__':
-    with open('fileTypesConfig.json') as types_file:
-        file_type_info = json.load(types_file)
-        file_path = []
-        ext = 'csv'
-        if get_file_path(file_type_info, ext, file_path):
-            # Reversing the list of path to get the correct path
-            file_path = file_path[::-1]
-            print(file_path)
+    backup_directory = 'D:\\Folder to Clean - Source'
+    directory = 'D:\\Folder to Clean'
+
+    set_up_test_folder(
+        old_folder=backup_directory, new_folder=directory, log=True)
+
+    clean_folder('fileTypesConfig.json', "D:\\Folder to Clean",
+                 log=True)
