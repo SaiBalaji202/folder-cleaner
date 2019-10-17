@@ -1,3 +1,9 @@
+"""
+A Module to generate/update the fileTypesConfig.json.
+
+It uses file_formats_scrapper package to generate/update the fileTypesConfig.json.
+"""
+
 import json
 from file_formats_scrapper import FileFormatsScrapper
 
