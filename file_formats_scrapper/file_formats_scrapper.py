@@ -36,7 +36,7 @@ class FileFormatsScrapper():
         """
 
         # Start Spinning
-        spnr = Utils.start_spinner(log, 
+        spnr = Utils.start_spinner(spin, 
                 msg=FileFormatsScrapper.__MSG_GEN_JSON)
 
         # Get a soup to parse a HTML of the Site
