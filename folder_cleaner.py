@@ -149,7 +149,7 @@ def get_file_paths(file_type_info, search_type, file_paths):
 
     # E.g. PNG -> png
     search_type = search_type.lower()
-    
+
     # Iterating over the file_type_info dictionary to get the file_type path
     for key, value in file_type_info.items():
 
@@ -197,7 +197,7 @@ def set_up_test_folder(old_folder, new_folder, log=False):
         Diplay Spinner with the corresponding log message when doing the corresponding operation (default False)
     """
     # Starting Spinner
-    spnr = utils.start_spinner(msg=fcc.MSG_SET_ENV)
+    spnr = utils.start_spinner(log, msg=fcc.MSG_SET_ENV)
 
     # Recreating a directory to clean by deleting it and creating it again
     delete_directory(new_folder)
@@ -236,7 +236,7 @@ def clean_folder(config_json_path, folder_to_clean, log=False):
         file_type_info = json.load(config_file)
 
         # Starting Spinner
-        spnr = utils.start_spinner(msg=fcc.MSG_DIR_SCAN)
+        spnr = utils.start_spinner(log, msg=fcc.MSG_DIR_SCAN)
 
         # Getting all files from the directory to be scanned
         files = scan_directory(directory)
@@ -245,7 +245,7 @@ def clean_folder(config_json_path, folder_to_clean, log=False):
         utils.stop_spinner(spnr)
 
         # Starting Spinner
-        utils.start_spinner(msg=fcc.MSG_FILE_MOVE)
+        utils.start_spinner(log, msg=fcc.MSG_FILE_MOVE)
 
         # Looping over the files
         for file in files:
