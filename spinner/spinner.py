@@ -138,7 +138,7 @@ def start_spinner(delay=.5, msg='PROCESSING', count=-1):
         print('Unable to Start a Spinner')
 
 
-def stop_spinner(spnr: Process):
+def stop_spinner(spnr: Process, msg="done"):
     """
     Terminate the spinner process
 
@@ -150,6 +150,7 @@ def stop_spinner(spnr: Process):
     try:
         # Stop Spinning
         spnr.terminate()
+        print(msg)
     except:
         print('Unable to Stop the Spinner')
 
