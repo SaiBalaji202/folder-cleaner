@@ -98,6 +98,9 @@ def get_file_path(file_type_info: dict, search_type, file_path):
     # Boolean Value to check wheter a file_type is found/not
     found = False
 
+    # E.g. PNG -> png
+    search_type = search_type.lower()
+
     # Iterating over the file_type_info dictionary to get the file_type path
     for key, value in file_type_info.items():
         # Checking in direct types
@@ -144,6 +147,9 @@ def get_file_paths(file_type_info, search_type, file_paths):
     # Boolean Value to check wheter a file_type is found/not
     found = False
 
+    # E.g. PNG -> png
+    search_type = search_type.lower()
+    
     # Iterating over the file_type_info dictionary to get the file_type path
     for key, value in file_type_info.items():
 
