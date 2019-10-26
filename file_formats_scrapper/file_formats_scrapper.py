@@ -6,7 +6,6 @@ import requests
 from bs4 import BeautifulSoup
 
 from file_formats_scrapper.utils import Utils
-import spinner
 
 
 class FileFormatsScrapper():
@@ -14,7 +13,8 @@ class FileFormatsScrapper():
         Class to scrap data from https://en.wikipedia.org/wiki/List_of_file_formats
     """
 
-    __MSG_GEN_JSON = 'Generating filetypes JSON'
+    __MSG_GEN_JSON = 'Generating Filetypes JSON'
+    __MSG_JSON_SCRAPPED = 'Filetypes JSON Downloaded Successfully :)'
 
     def __init__(self):
         self.__url = 'https://en.wikipedia.org/wiki/List_of_file_formats'
@@ -36,8 +36,7 @@ class FileFormatsScrapper():
         """
 
         # Start Spinning
-        if spin:
-            spnr = spinner.start_spinner(
+        spnr = Utils.start_spinner(
                 msg=FileFormatsScrapper.__MSG_GEN_JSON)
 
         # Get a soup to parse a HTML of the Site
@@ -48,8 +47,7 @@ class FileFormatsScrapper():
         self.__extract_data_from_a_tag(file_types)
 
         # Stop Spinning
-        if spin:
-            spinner.stop_spinner(spnr)
+        Utils.stop_spinner(spnr, msg=FileFormatsScrapper.__MSG_JSON_SCRAPPED)
 
         # Return the file_types JSON object
         return self.__file_type_info
