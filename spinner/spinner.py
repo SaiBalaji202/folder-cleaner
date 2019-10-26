@@ -150,6 +150,7 @@ def stop_spinner(spnr: Process, msg="done"):
     try:
         # Stop Spinning
         spnr.terminate()
+        print("")
         print(msg)
     except:
         print('Unable to Stop the Spinner')
