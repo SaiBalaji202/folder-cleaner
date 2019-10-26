@@ -2,6 +2,7 @@ import os
 import pathlib
 import json
 from multiprocessing import Process
+import spinner
 
 
 def get_files(directory, files_only=False):
