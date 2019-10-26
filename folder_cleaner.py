@@ -263,7 +263,7 @@ def set_up_test_folder(old_folder, new_folder, log=False):
         shutil.copyfile(file, new_file)
 
     # Stopping Spinner
-    utils.stop_spinner(spnr)
+    utils.stop_spinner(spnr, msg=fcc.MSG_SET_ENV_COMPLETED)
 
 
 def clean_folder(config_json_path, user_config_file, folder_to_clean, log=False):
@@ -288,7 +288,7 @@ def clean_folder(config_json_path, user_config_file, folder_to_clean, log=False)
     files = scan_directory(folder_to_clean)
 
     # Stopping Directory Scanning Spinner
-    utils.stop_spinner(spnr)
+    utils.stop_spinner(spnr, msg=fcc.MSG_DIR_SCANNED)
 
     # Loading the User Config FileTypes JSON Data
     if not exists(user_config_file):
@@ -337,7 +337,7 @@ def clean_folder(config_json_path, user_config_file, folder_to_clean, log=False)
             map_file_to_file_type(exceptional_files, ext, file)
 
     # Stopping Folder Cleaner Spinner
-    utils.stop_spinner(spnr)
+    utils.stop_spinner(spnr, msg=fcc.MSG_FILE_MOVED)
 
     exceptional_file_types = [ext for ext in exceptional_files.keys()]
 
@@ -355,7 +355,7 @@ def clean_folder(config_json_path, user_config_file, folder_to_clean, log=False)
         user_config = utils.load_json(user_config_file)
         # Moving all the Exceptional Files
         move_files_user_config(user_config, files)
-        utils.stop_spinner(spnr)
+        utils.stop_spinner(spnr, msg=fcc.MSG_FILE_MOVED)
 
 
 def get_user_file_types(file_path):
