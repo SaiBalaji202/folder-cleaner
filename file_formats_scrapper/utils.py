@@ -83,6 +83,8 @@ class Utils(object):
         ---
         spnr: Process
             Instance of the running spinner process
+        msg: str
+            Stop Message
         """
         if isinstance(spnr, Process):
             spinner.stop_spinner(spnr, msg)

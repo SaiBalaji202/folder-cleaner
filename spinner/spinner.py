@@ -146,6 +146,8 @@ def stop_spinner(spnr: Process, msg="done"):
     ---
     spnr: Process
         Instance of the running spinner process
+    msg: str
+        Stop Message
     """
     try:
         # Stop Spinning
