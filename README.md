@@ -1,5 +1,12 @@
 # folder-cleaner
-A Simple Python App to clean files in any Directory
+A Simple Python App to clean files in any Directory.
+
+Open your Terminal, navigate to your project folder and then use the following commands to do the desired tasks
+
+## Install pipenv for Dependency Management
+```
+$python -m pip install pipenv
+```
 
 ## Install Dependencies
 ```
