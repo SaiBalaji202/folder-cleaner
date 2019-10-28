@@ -14,7 +14,7 @@ class FileFormatsScrapper():
     """
 
     __MSG_GEN_JSON = 'Generating Filetypes JSON'
-    __MSG_JSON_SCRAPPED = 'Filetypes JSON Downloaded Successfully :)'
+    __MSG_JSON_SCRAPPED = '✓ JSON Generated Successfully :)'
 
     def __init__(self):
         self.__url = 'https://en.wikipedia.org/wiki/List_of_file_formats'
