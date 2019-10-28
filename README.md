@@ -5,32 +5,32 @@ Open your Terminal, navigate to your project folder and then use the following c
 
 ## Install pipenv for Dependency Management
 ```
-$python -m pip install pipenv
+python -m pip install pipenv
 ```
 
 ## Install Dependencies
 ```
-$pipenv install
+pipenv install
 ```
 
 ## Activate Virtual Environment
 ```
-$pipenv shell
+pipenv shell
 ```
 
 ## Checking the Virtual Environment Directory
 ```
-$pipenv --venv
+pipenv --venv
 ```
 
 ## Running the code
 ```
-$python app.py
+python app.py
 ```
 
 ## Exiting the Virtual Environment
 ```
-$exit
+exit
 ```
 
 
