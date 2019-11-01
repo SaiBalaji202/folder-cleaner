@@ -87,7 +87,7 @@ class FileFormatsScrapper():
                 file_type = file_type[1:]
             return file_type
 
-    def __extract_data_from_a_tag(self, selector_tag, keys=[]):
+    def __extract_data_from_a_tag(self, selector_tag, keys=None):
         """
             Extract all the type name (E.g. Program) and the sub-type name (E.g. Python) from the selector and update the self.file_type_info dictionary.
             If a root type name is Program, then it has lot of sub-types like C, C++, Java, Python, etc.
@@ -103,6 +103,7 @@ class FileFormatsScrapper():
                     keys = [Program, Python]
                     keys = [Program, C]       
         """
+        keys = keys or []
         file_types = selector_tag.find_all('li', recursive=False)
 
         # Each type may have a sub-type too
